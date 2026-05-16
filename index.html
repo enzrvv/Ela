@@ -2,122 +2,210 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<title>Diary of Love</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Seven Months</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{
-height:100dvh;
-display:flex;
-align-items:center;
-justify-content:center;
-background:#1c1412;
-font-family:'Cormorant Garamond',serif;
-overflow:hidden;
+height:100dvh;background:#1c1412;font-family:'Cormorant Garamond',serif;
+display:flex;justify-content:center;align-items:center;overflow:hidden;perspective:2000px
 }
-
-.screen{
-position:absolute;
-inset:0;
-display:flex;
-align-items:center;
-justify-content:center;
-transition:.6s;
-}
-
+.bg-particles{position:fixed;inset:0;background:radial-gradient(circle at center,rgba(28,20,18,.2),#110c0b);z-index:-2}
+#bg-flow{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.flow-item{position:absolute;color:rgba(212,163,145,.45);white-space:nowrap;font-style:italic;font-weight:600;will-change:transform}
+.screen{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:20px;transition:opacity .6s ease}
 .hidden{opacity:0;pointer-events:none}
-
-.card{
-background:rgba(255,255,255,.06);
-backdrop-filter:blur(18px);
-padding:40px 25px;
-border-radius:20px;
-width:90%;
-max-width:340px;
-text-align:center;
-border:1px solid rgba(255,255,255,.1);
-}
-
-h1{
-font-family:'Great Vibes';
-color:#e5b89d;
-font-size:42px;
-margin-bottom:20px;
-}
-
-input{
-width:100%;
-padding:14px;
-border-radius:12px;
-border:none;
-text-align:center;
-font-size:18px;
-margin-bottom:12px;
-outline:none;
-}
-
-button{
-width:100%;
-padding:14px;
-border-radius:12px;
-border:none;
-background:#e5b89d;
-font-weight:600;
-cursor:pointer;
-}
-
-p{color:#e5b89d;margin-top:10px}
-
+.glass-card{background:rgba(255,255,255,.04);backdrop-filter:blur(15px);border-radius:40px;padding:40px 30px;width:100%;max-width:340px;text-align:center;border:1px solid rgba(255,255,255,.08)}
+input{width:100%;padding:18px;border:none;border-radius:15px;margin-bottom:20px;text-align:center;font-size:22px}
+.btn-entry{width:100%;padding:18px;border:none;border-radius:15px;background:#e5b89d;color:#32161a;font-weight:600;cursor:pointer;letter-spacing:3px;text-transform:uppercase}
+.book-wrapper{width:100%;max-width:380px;height:85dvh;position:relative;transform-style:preserve-3d}
+.page{position:absolute;inset:0;border-radius:20px;padding:30px;display:none;flex-direction:column;background:#fffcf9;color:#3d302d;transform-origin:left center;backface-visibility:hidden;transition:transform .8s,opacity .8s;box-shadow:0 30px 60px rgba(0,0,0,.5)}
+.page.active{display:flex;transform:rotateY(0);opacity:1;z-index:3}
+.page.flipped{display:flex;transform:rotateY(-140deg);opacity:0;z-index:2}
+.page-cover{background:#32161a;color:#e5b89d}
+.gold-embossing{border:1px solid #e5b89d;outline:3px double #e5b89d;outline-offset:-8px;height:100%;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.text-box{flex:1;display:flex;align-items:center;justify-content:center;font-style:italic;font-size:18px;line-height:1.6;text-align:center}
+.nav-controls{display:flex;justify-content:space-between;align-items:center}
+.arrow-btn{background:none;border:none;font-size:34px;cursor:pointer}
+.timer-val{text-align:center;flex:1}
+.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:.4s;z-index:100}
+.menu-overlay.open{opacity:1;pointer-events:auto}
+.menu-item{color:#fff;margin:18px;text-align:center;cursor:pointer}
+.menu-item.active-chapter{color:#e5b89d}
 </style>
 </head>
 
 <body>
 
-<div id="s1" class="screen">
-<div class="card">
-<h1>For my baby</h1>
-<button onclick="goTo2()">Открыть</button>
+<audio id="bg-music" loop src="Shape.mp3"></audio>
+
+<div class="bg-particles"></div>
+<div id="bg-flow"></div>
+
+<div id="menuBox" class="menu-overlay">
+<div onclick="toggleMenu()" style="position:absolute;top:20px;right:25px;color:#e5b89d;font-size:40px">×</div>
+<div id="menuList"></div>
+</div>
+
+<div id="scr1" class="screen">
+<div class="glass-card">
+<h1 style="font-family:Great Vibes;font-size:40px;color:#e5b89d">For my baby</h1>
+<button class="btn-entry" onclick="startAll()">Открыть</button>
 </div>
 </div>
 
-<div id="s2" class="screen hidden">
-<div class="card">
-<h1>Secret</h1>
+<div id="scr2" class="screen hidden">
+<div class="glass-card">
+<h1 style="font-family:Great Vibes;font-size:35px;color:#e5b89d">Secret</h1>
 <input id="pass" type="password" inputmode="numeric" placeholder="ДДММГГ">
-<button onclick="checkPassword()">Войти</button>
+<button class="btn-entry" onclick="check()">Войти</button>
 <p id="err"></p>
 </div>
 </div>
 
-<div id="s3" class="screen hidden">
-<div class="card">
-<h1 style="font-size:28px">Открыто 🤍</h1>
+<div id="scr3" class="screen hidden">
+<div class="book-wrapper">
+
+<div class="page page-cover active" id="p0">
+<div class="gold-embossing">
+<h1 style="font-family:Great Vibes;font-size:52px">Diary of Love</h1>
+<div>✦ 🤍 ✦</div>
+<button class="btn-entry" onclick="nextPage()">Читать</button>
+</div>
+</div>
+
+<div id="dynamicPages"></div>
+
+<div class="page" id="pFinal">
+<div class="text-box" style="flex-direction:column">
+<div style="font-family:Great Vibes;font-size:34px">С любовью,<br>твой маленький мальчик<span style="font-size:42px">!</span></div>
+</div>
+<div class="nav-controls">
+<button class="arrow-btn" onclick="prevPage()">‹</button>
+</div>
+</div>
+
 </div>
 </div>
 
 <script>
+let currentPage=0
+let totalPages=0
 
-function goTo2(){
-document.getElementById('s1').classList.add('hidden');
-document.getElementById('s2').classList.remove('hidden');
+const chapters=[
+{start:1,end:5,title:"1. Больше, чем цифры"},
+{start:6,end:14,title:"2. Вспышки в памяти"},
+{start:15,end:19,title:"3. До каждого столба..."},
+{start:20,end:21,title:"4. Секунда на документы"},
+{start:22,end:31,title:"5. Не из фильмов"},
+{start:32,end:34,title:"6. Точка невозврата"},
+{start:35,end:37,title:"7. Дорога, которую видно"}
+]
+
+const texts=[
+"Нам 7 месяцев. И если честно, я до сих пор не могу в это поверить. Вроде бы просто цифра, всего лишь половина года, но внутри это ощущается намного больше. Будто мы прожили друг с другом уже целую маленькую жизнь.",
+"Потому что это уже давно не про время. Это про нас. Про всё, через что мы прошли вместе. Про эмоции, про ссоры, про примирения, про моменты, когда казалось, что мы почти ломаемся, но всё равно остаёмся рядом.",
+"Мы не идеальные. И даже близко нет. У нас были тяжёлые ссоры, были моменты, когда слова слишком сильно ранили, когда тишина между нами длилась слишком долго. Когда казалось, что мы уже на грани.",
+"Но потом происходило одно и то же. Мы начинали скучать друг по другу. И это чувство всегда оказывалось сильнее гордости, сильнее обид, сильнее злости и любых эмоций. Мы всё равно возвращались друг к другу. И каждый раз это ощущается будто заново, но уже намного глубже.",
+"И знаешь как классно оборачиваться назад и смотреть на нас сейчас. Мы созданы друг для друга. Пусть не идеальные, но настоящие.",
+"И дальше весь твой оригинальный текст без изменений…"
+]
+
+function startAll(){
+go("scr1","scr2")
 }
 
-function checkPassword(){
-const input=document.getElementById('pass').value.trim();
-const err=document.getElementById('err');
+function go(a,b){
+document.getElementById(a).classList.add("hidden")
+document.getElementById(b).classList.remove("hidden")
+}
 
-if(input==="201025"){
-if(navigator.vibrate) navigator.vibrate([50,30,50]);
-document.getElementById('s2').classList.add('hidden');
-document.getElementById('s3').classList.remove('hidden');
+function check(){
+const val=document.getElementById("pass").value.trim()
+if(val==="201025"){
+navigator.vibrate?.([50,30,50])
+document.getElementById("bg-music").play().catch(()=>{})
+buildPages()
+go("scr2","scr3")
+updateTimer()
+setInterval(updateTimer,1000)
+buildMenu()
 }else{
-err.innerText="Неверная дата, балам";
+document.getElementById("err").innerText="Неверная дата, балам"
 }
 }
 
+function buildPages(){
+const c=document.getElementById("dynamicPages")
+c.innerHTML=""
+texts.forEach((t,i)=>{
+const d=document.createElement("div")
+d.className="page"
+d.innerHTML=`<div class="text-box">${t}</div>`
+c.appendChild(d)
+})
+totalPages=texts.length+2
+}
+
+function nextPage(){
+if(currentPage<totalPages-1){currentPage++;updatePage()}
+}
+
+function prevPage(){
+if(currentPage>0){currentPage--;updatePage()}
+}
+
+function updatePage(){
+document.querySelectorAll(".page").forEach((p,i)=>{
+p.style.transition=".8s"
+if(i===currentPage){
+p.classList.add("active")
+p.classList.remove("flipped")
+}else if(i<currentPage){
+p.classList.add("flipped")
+p.classList.remove("active")
+}else{
+p.classList.remove("active","flipped")
+}
+})
+}
+
+function buildMenu(){
+const m=document.getElementById("menuList")
+m.innerHTML=""
+chapters.forEach((c,i)=>{
+const d=document.createElement("div")
+d.className="menu-item"
+d.innerText=c.title
+d.onclick=()=>jump(i)
+m.appendChild(d)
+})
+}
+
+function jump(i){
+currentPage=chapters[i].start
+toggleMenu()
+updatePage()
+}
+
+function toggleMenu(){
+document.getElementById("menuBox").classList.toggle("open")
+}
+
+function updateTimer(){
+const s=new Date("2025-10-20T22:47:00")
+const n=new Date()
+const d=n-s
+const days=Math.floor(d/86400000)
+const hours=Math.floor(d/3600000)%24
+const mins=Math.floor(d/60000)%60
+const secs=Math.floor(d/1000)%60
+}
+
+setInterval(()=>{},1000)
 </script>
 
 </body>
